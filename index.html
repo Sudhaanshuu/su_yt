@@ -4,41 +4,79 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>You're In</title>
+    <title>YouTube Player</title>
     <style>
         html,
         body {
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
             background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
         }
         
-        #ytContainer {
-            position: fixed;
+        #inputSection {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            text-align: center;
+        }
+        
+        input,
+        button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            margin: 5px;
+        }
+        
+        iframe {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             border: none;
+            display: none;
         }
     </style>
 </head>
 
 <body>
-    <iframe id="ytContainer" src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+    <div id="inputSection">
+        <input type="text" id="videoInput" placeholder="Enter YouTube URL or ID" size="40" />
+        <button onclick="playVideo()">Play</button>
+    </div>
+
+    <iframe id="ytFrame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
     <script>
-        // Optional: You can change the video dynamically
-        const params = new URLSearchParams(window.location.search);
-        const vid = params.get("v");
+        function extractVideoID(url) {
+            // Match YouTube full URL or ID
+            const regex = /(?:youtube\.com.*(?:v=|\/embed\/)|youtu\.be\/)?([a-zA-Z0-9_-]{11})/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
 
-        if (vid) {
-            document.getElementById("ytContainer").src =
-                "https://www.youtube.com/embed/" + vid + "?autoplay=1&mute=1";
+        function playVideo() {
+            const input = document.getElementById("videoInput").value.trim();
+            const videoId = extractVideoID(input);
+            if (!videoId) {
+                alert("Please enter a valid YouTube URL or video ID.");
+                return;
+            }
+            const iframe = document.getElementById("ytFrame");
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`;
+            iframe.style.display = "block";
+            document.getElementById("inputSection").style.display = "none";
         }
     </script>
+
 </body>
 
 </html>
